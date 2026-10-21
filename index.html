@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RuangPENS</title>
+
+  <!-- style.css mengatur tampilan; dihubungkan lewat tag <link> di <head> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="container">
+
+    <header class="header">
+      <img src="../assets/logo.png" alt="Logo RuangPENS" class="logo" width="56" height="56" onerror="this.style.display='none'">
+      <h1>RuangPENS</h1>
+      <p>Bingung arti kode ruangan di PENS? Yuk, cari di sini!</p>
+    </header>
+
+    
+<nav class="navbar navbar-expand-sm bg-body-tertiary border rounded-3 px-3 mb-4" aria-label="Menu utama">
+  <div class="container-fluid px-0">
+    <div class="navbar-nav flex-row flex-wrap gap-2 me-auto">
+      <button type="button" class="nav-link nav-btn" data-view="cari" aria-current="page">Cari</button>
+      <button type="button" class="nav-link nav-btn" data-view="panduan">Panduan</button>
+      <button type="button" class="nav-link nav-btn" data-view="riwayat">Riwayat</button>
+    </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm suara-btn" id="suaraBtn" aria-pressed="true">🔊 Suara</button>
+  </div>
+</nav>
+
+    
+    <div id="view-cari" class="view">
+    <section class="search-box">
+
+      <!-- Tombol untuk pindah antara mode dropdown dan mode ketik manual -->
+      <div class="mode-toggle" role="tablist">
+        <button type="button" class="mode-btn aktif" data-mode="pilih" role="tab" aria-selected="true">
+          Pilih Ruangan
+        </button>
+        <button type="button" class="mode-btn" data-mode="manual" role="tab" aria-selected="false">
+          Ketik Kode
+        </button>
+      </div>
+
+      <form id="roomForm" novalidate>
+
+        <!-- ===== MODE 1: dropdown bertingkat ===== -->
+        <div id="modePilih" class="mode-panel">
+
+          <div class="field">
+            <label for="gedungSelect">Nama Gedung</label>
+            <select id="gedungSelect" class="form-select">
+              <option value="" disabled selected>Pilih gedung</option>
+              <!-- Isinya diisi lewat JavaScript, bukan ditulis manual di sini,
+                   supaya daftar gedung cukup didefinisikan sekali saja di script.js -->
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="lantaiSelect">Lantai</label>
+            <select id="lantaiSelect" class="form-select" disabled>
+              <option value="" disabled selected>Pilih gedung dulu</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="ruanganSelect">Ruangan</label>
+            <select id="ruanganSelect" class="form-select" disabled>
+              <option value="" disabled selected>Pilih lantai dulu</option>
+            </select>
+          </div>
+
+          <p id="errorPilih" class="error" role="alert"></p>
+        </div>
+
+        <!-- ===== MODE 2: ketik kode manual ===== -->
+        <div id="modeManual" class="mode-panel hidden">
+          <div class="field">
+            <label for="roomCode">Kode ruangan</label>
+            <input type="text" id="roomCode" placeholder="Contoh: PS 1.03" autocomplete="off">
+            <p id="inputMessage" class="error" role="alert"></p>
+          </div>
+        </div>
+
+        <button type="submit" id="searchButton" class="btn btn-primary btn-cari">Cari Ruangan</button>
+
+      </form>
+
+    </section>
+
+    <!-- Tiga kondisi hasil pencarian: memuat, kosong, dan berhasil.
+         Hanya satu yang terlihat pada satu waktu; diatur lewat class "hidden" di script.js -->
+    <section id="loadingState" class="state hidden">
+      <p>🔎 Mencari ruangan...</p>
+    </section>
+
+    <section id="emptyState" class="state">
+      <p>Belum ada ruangan yang dicari. Yuk ketik kodenya!</p>
+    </section>
+
+    <section id="resultState" class="result hidden">
+      <h2>Hasil Pencarian</h2>
+      <div class="result-card">
+        <p><strong>Gedung:</strong> <span id="buildingResult"></span></p>
+        <p><strong>Lantai:</strong> <span id="floorResult"></span></p>
+        <p><strong>Ruangan:</strong> <span id="roomResult"></span></p>
+      </div>
+
+      <!-- Denah kampus: kotak per gedung, yang cocok dengan hasil pencarian ikut menyala -->
+      <div class="peta-wrap">
+        <h3>Gedungnya di sini</h3>
+        <div class="peta-kampus" id="petaKampus"></div>
+        <p class="peta-catatan">Denah ilustratif untuk membantu orientasi, bukan skala sebenarnya.</p>
+
+        <h3>Posisi ruangan di lantai <span id="lantaiLabelDenah"></span></h3>
+        <div class="denah-lantai" id="denahLantai"></div>
+      </div>
+    </section>
+
+    </div>
+
+    <section id="view-panduan" class="view hidden">
+      <div class="kartu">
+        <h2>Cara membaca kode ruangan</h2>
+        <p class="kode-besar">PS 1.03</p>
+        <p><strong>PS</strong> = kode gedung, <strong>1</strong> = lantai, <strong>03</strong> = nomor ruangan.</p>
+      </div>
+      <div class="kartu">
+        <h2>Contoh</h2>
+        <ul class="contoh-list" id="contohList"></ul>
+      </div>
+    </section>
+
+    <section id="view-riwayat" class="view hidden">
+      <div class="kartu">
+        <h2>Pencarian terakhir</h2>
+        <ul class="riwayat-list" id="riwayatList"></ul>
+        <p id="riwayatKosong" class="state-kosong">Belum ada pencarian. <button type="button" class="link-btn" data-goto="cari">Mulai mencari</button></p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- script.js diletakkan sebelum </body>, bukan di <head>,
+       supaya seluruh elemen HTML di atas sudah ada saat JavaScript mulai membacanya -->
+  
+  <!-- Bootstrap JavaScript -->
+  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Pembungkus pustaka UI -->
+<script src="ui-pustaka.js"></script>
+
+<!-- JavaScript RuangPENS -->
+<script src="script.js"></script>
+</body>
+</html>
+
+
