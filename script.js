@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Media audio: bunyi saat ruangan ketemu, bisa dimatikan
-  const bunyi = new Audio("aset/success.mp3");
+     const bunyi = new Audio("assets/success.mp3");
   const suaraBtn = document.getElementById("suaraBtn");
   let suaraAktif = true;
   try { suaraAktif = localStorage.getItem("suara") !== "mati"; } catch (_) {}
