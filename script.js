@@ -600,20 +600,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // Umpan balik aksi: tombol salin berubah dan "membal" sebentar
   document.getElementById("salinBtn").addEventListener("click", async (e) => {
     const tombol = e.currentTarget;
+    let berhasil = false;
+
     try {
       await navigator.clipboard.writeText(teksPetunjuk);
+      berhasil = true;
     } catch (_) {
       const ta = document.createElement("textarea");
       ta.value = teksPetunjuk;
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand("copy");
+      berhasil = document.execCommand("copy");
       ta.remove();
     }
-    tombol.textContent = "✅ Tersalin!";
+
+    if (berhasil) {
+      tombol.textContent = "✅ Tersalin!";
+    } else {
+      tombol.textContent = "❌ Gagal menyalin";
+    }
+
     tombol.animate(
       [{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
       { duration: durasi(300), easing: "ease-out" });
+
     setTimeout(() => { tombol.textContent = "📋 Salin petunjuk"; }, 1800);
   });
 });
