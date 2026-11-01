@@ -514,7 +514,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Riwayat pencarian (5 terakhir) dan tombol kode contoh
   let riwayat = [];
-  try { riwayat = JSON.parse(localStorage.getItem("riwayat") || "[]"); } catch (_) {}
+  try {
+    const dataRiwayat = JSON.parse(localStorage.getItem("riwayat") || "[]");
+    riwayat = Array.isArray(dataRiwayat) ? dataRiwayat : [];
+  } catch (_) {
+    riwayat = [];
+  }
   function catatRiwayat(kode) {
     riwayat = [kode, ...riwayat.filter(k => k !== kode)].slice(0, 5);
     try { localStorage.setItem("riwayat", JSON.stringify(riwayat)); } catch (_) {}
