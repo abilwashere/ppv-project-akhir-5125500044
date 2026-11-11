@@ -24,6 +24,20 @@ const UIPustaka = {
     elemen.classList.toggle("d-none", !tampil);
   },
 
+  // Membuat tombol kode ruangan yang dapat digunakan ulang
+  tombolKode(kode, aksiKlik) {
+    const li = document.createElement("li");
+    const tombol = document.createElement("button");
+
+    tombol.type = "button";
+    tombol.className = "kode-btn";
+    tombol.textContent = kode;
+    tombol.addEventListener("click", aksiKlik);
+
+    li.appendChild(tombol);
+    return li;
+  },
+
   // Membuat notifikasi sederhana
   notifikasi(pesan, jenis = "primary") {
     const jenisValid = [

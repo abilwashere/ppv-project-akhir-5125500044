@@ -21,12 +21,16 @@ Roadmap ini menjelaskan rencana pengembangan RuangPENS dari Sprint P10 hingga P1
 - Menguji kembali fungsi aplikasi setelah pemisahan kode.
 
 ## P12 — Komponen, Penyimpanan Aman, dan Maintenance
-**Status: Direncanakan**
+**Status: Selesai**
 
-- Mengembangkan komponen antarmuka agar kode lebih terstruktur dan dapat digunakan kembali.
-- Menerapkan penyimpanan data di browser sesuai kebutuhan aplikasi.
-- Memastikan data yang disimpan ditangani dengan aman.
-- Melakukan pemeliharaan dan pengujian ulang aplikasi.
+- Mengembangkan komponen antarmuka reusable melalui UIPustaka.
+- Menggunakan kembali fungsi tombolKode() pada daftar riwayat dan contoh kode.
+- Memisahkan pengelolaan riwayat dan pengaturan suara ke modul storage.js.
+- Menghubungkan modul penyimpanan melalui storage-bridge.js.
+- Menerapkan kunci penyimpanan berversi untuk riwayat dan pengaturan suara.
+- Menambahkan validasi data, penanganan JSON rusak, dan penyimpanan sementara di memori.
+- Menguji aplikasi menggunakan data JSON rusak dan data dengan tipe object.
+- Memperbarui dokumentasi README dan CHANGELOG.
 
 ## P13 — Konsep Produk
 **Status: Direncanakan**

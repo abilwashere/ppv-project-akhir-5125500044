@@ -11,7 +11,7 @@
      6. mouseover          -> teks tombol berubah saat kursor di atasnya
      7. keydown             -> Enter langsung memicu pencarian
      8. submit               -> menjalankan validasi lalu pencarian
-   =========================================================== /
+      =========================================================== */
 
 /* ---------- Data ruangan PENS ----------
    Satu sumber data untuk semuanya: dropdown gedung, dropdown lantai,
@@ -493,60 +493,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Media audio: bunyi saat ruangan ketemu, bisa dimatikan
      const bunyi = new Audio("assets/success.mp3");
-  const suaraBtn = document.getElementById("suaraBtn");
-  let suaraAktif = true;
-  try { suaraAktif = localStorage.getItem("suara") !== "mati"; } catch (_) {}
-  function labelSuara() {
-    suaraBtn.textContent = suaraAktif ? "🔊 Suara" : "🔇 Suara";
-    suaraBtn.setAttribute("aria-pressed", String(suaraAktif));
-  }
+const suaraBtn = document.getElementById("suaraBtn");
+let suaraAktif = window.StorageRuangPENS.muatSuara();
+
+function labelSuara() {
+  suaraBtn.textContent = suaraAktif ? "🔊 Suara" : "🔇 Suara";
+  suaraBtn.setAttribute("aria-pressed", String(suaraAktif));
+}
+
+labelSuara();
+
+suaraBtn.addEventListener("click", () => {
+  suaraAktif = !suaraAktif;
   labelSuara();
-  suaraBtn.addEventListener("click", () => {
-    suaraAktif = !suaraAktif;
-    labelSuara();
-    try { localStorage.setItem("suara", suaraAktif ? "hidup" : "mati"); } catch (_) {}
-  });
+  window.StorageRuangPENS.simpanSuara(suaraAktif);
+});
   function mainkanBunyi() {
     if (!suaraAktif) return;
     bunyi.currentTime = 0;
     bunyi.play().catch((err) => console.log("Audio gagal diputar:", err));
   }
 
-  // Riwayat pencarian (5 terakhir) dan tombol kode contoh
-  let riwayat = [];
-  try {
-    const dataRiwayat = JSON.parse(localStorage.getItem("riwayat") || "[]");
-    riwayat = Array.isArray(dataRiwayat) ? dataRiwayat : [];
-  } catch (_) {
-    riwayat = [];
-  }
-  function catatRiwayat(kode) {
-    riwayat = [kode, ...riwayat.filter(k => k !== kode)].slice(0, 5);
-    try { localStorage.setItem("riwayat", JSON.stringify(riwayat)); } catch (_) {}
-  }
-  function tombolKode(kode) {
-    const li = document.createElement("li");
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "kode-btn";
-    b.textContent = kode;
-    b.addEventListener("click", () => cariDariKode(kode));
-    li.appendChild(b);
-    return li;
-  }
+ // Riwayat pencarian (5 terakhir) dan tombol kode contoh
+let riwayat = window.StorageRuangPENS.muatRiwayat();
+
+function catatRiwayat(kode) {
+  riwayat = [
+    kode,
+    ...riwayat.filter(k => k !== kode)
+  ].slice(0, 5);
+
+  window.StorageRuangPENS.simpanRiwayat(riwayat);
+}
+
   function tampilRiwayat() {
-    document.getElementById("riwayatList").replaceChildren(...riwayat.map(tombolKode));
-    document.getElementById("riwayatKosong").classList.toggle("hidden", riwayat.length > 0);
+    document.getElementById("riwayatList").replaceChildren(
+      ...riwayat.map(kode =>
+        UIPustaka.tombolKode(kode, () => cariDariKode(kode))
+      )
+    );
+
+    document.getElementById("riwayatKosong").classList.toggle(
+      "hidden",
+      riwayat.length > 0
+    );
   }
+
   function cariDariKode(kode) {
     pindahTampilan("cari");
     document.querySelector('.mode-btn[data-mode="manual"]').click();
     roomCode.value = kode;
     roomForm.requestSubmit();
   }
-  document.getElementById("contohList").replaceChildren(
-    ...["PS 1.01", "SAW 2.02", "HH 3.03", "JJ 2.04"].map(tombolKode));
 
+  document.getElementById("contohList").replaceChildren(
+    ...["PS 1.01", "SAW 2.02", "HH 3.03", "JJ 2.04"].map(kode =>
+      UIPustaka.tombolKode(kode, () => cariDariKode(kode))
+    )
+  );
 
   /* ===========================================================
      PETUNJUK ARAH — isi dari kondisi nyata kampus
