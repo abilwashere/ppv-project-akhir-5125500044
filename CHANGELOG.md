@@ -22,7 +22,7 @@ Format mengikuti Keep a Changelog dan menggunakan Semantic Versioning.
 
 - Menambahkan modul `storage.js` untuk mengelola penyimpanan riwayat dan pengaturan suara.
 
-- Menambahkan `storage-bridge.js` sebagai penghubung modul penyimpanan dengan aplikasi.
+- Mengintegrasikan pengelolaan penyimpanan melalui modul `src/storage.js`.
 
 
 
